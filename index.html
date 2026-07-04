@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maraqlı Ovçular v15.0 (Wider Screen & Correct Name Order)</title>
+    <title>Ovçu v16.0</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <style>
@@ -19,21 +19,34 @@
         #main-wrapper { display: flex; gap: 20px; align-items: flex-start; }
         
         #login-screen {
-            background: #ffffff; padding: 40px; border-radius: 20px;
+            background: #ffffff; padding: 30px 40px; border-radius: 20px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.4); text-align: center;
-            width: 380px; border: 4px solid #4caf50;
+            width: 380px; border: 4px solid #4caf50; position: relative;
         }
-        #login-screen h2 { color: #2e7d32; font-size: 28px; margin-bottom: 25px; text-transform: uppercase; }
-        input { width: 85%; padding: 12px; margin: 12px 0; border: 3px solid #c5e1a5; border-radius: 8px; font-size: 16px; outline: none; }
+        #login-screen h2 { color: #2e7d32; font-size: 36px; margin-top: 5px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+        input { width: 85%; padding: 12px; margin: 10px 0; border: 3px solid #c5e1a5; border-radius: 8px; font-size: 16px; outline: none; }
         input:focus { border-color: #4caf50; }
         .btn { background-color: #ff9100; color: white; border: none; padding: 14px 40px; font-size: 18px; font-weight: bold; border-radius: 8px; cursor: pointer; box-shadow: 0 5px 0 #b36600; }
         .btn:hover { background-color: #ffa726; }
+        
+        /* Ekologiya və Müəllif Bölməsi */
+        .eco-warning {
+            background-color: #f1f8e9; border-left: 5px solid #81c784;
+            padding: 12px; margin: 20px 0 15px 0; border-radius: 4px;
+            text-align: left; font-size: 13px; color: #33691e; line-height: 1.5;
+        }
+        .eco-warning strong { color: #c62828; display: block; margin-bottom: 4px; font-size: 14px; }
+        
+        .author-credits {
+            font-size: 11px; color: #777; margin-top: 20px; 
+            font-style: italic; border-top: 1px dashed #ddd; padding-top: 10px;
+        }
         
         /* Genişləndirilmiş Liderlər Cədvəli */
         #scoreboard {
             background: #fff; width: 560px; padding: 20px; border-radius: 15px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.3); border: 4px solid #0288d1;
-            max-height: 500px; overflow-y: auto;
+            max-height: 530px; overflow-y: auto;
         }
         #scoreboard h3 { margin-top: 0; color: #0288d1; text-align: center; text-transform: uppercase; border-bottom: 2px solid #b3e5fc; padding-bottom: 10px; margin-bottom: 10px; }
         
@@ -52,7 +65,7 @@
         .score-points { color: #f57c00; font-weight: bold; text-align: center; display: inline-block; width: 100%; }
         .medal-slot { font-size: 20px; font-weight: bold; text-align: center; display: inline-block; width: 100%; }
 
-        /* Oyun Sahəsi - ENLİ HALE GƏTİRİLDİ (1180px) */
+        /* Oyun Sahəsi (1180px - Enli) */
         #game-container { display: none; position: relative; width: 1180px; height: 562px; background: #63c7ff; overflow: hidden; border: 6px solid #fff; border-radius: 12px; box-shadow: 0 15px 40px rgba(0,0,0,0.6); cursor: none; }
         
         #level-announcer {
@@ -97,7 +110,7 @@
         .cloud-2 { width: 170px; height: 50px; top: 100px; left: -250px; animation-duration: 45s; animation-delay: -15s; }
         .cloud-2::before { width: 75px; height: 75px; top: -35px; left: 20px; }
         .cloud-2::after { width: 95px; height: 95px; top: -45px; left: 55px; }
-        @keyframes moveCloud { 0% { left: -250px; } 100% { left: 1250px; } } /* Enli ekran üçün limit artırıldı */
+        @keyframes moveCloud { 0% { left: -250px; } 100% { left: 1250px; } }
         
         .mountains { position: absolute; bottom: 95px; left: 0; width: 100%; height: 150px; z-index: 2; opacity: 0.45; pointer-events: none; }
         .vector-tree { position: absolute; bottom: 100px; right: 80px; width: 160px; height: 240px; z-index: 3; pointer-events: none; }
@@ -132,20 +145,27 @@
 
     <div id="main-wrapper">
         <div id="login-screen">
-            <h2>Maraqlı Ovçular</h2>
+            <h2>Ovçu</h2>
             <input type="text" id="firstname" placeholder="Adınız" required>
             <input type="text" id="lastname" placeholder="Soyadınız" required>
             <input type="password" id="password" placeholder="Şifrəniz" required>
-            <br><br>
+            
+            <div class="eco-warning">
+                <strong>⚠️ DİQQƏT!</strong>
+                Bu sadəcə bir oyundur. Biz təbiəti qorumalıyıq! Gerçək həyatda ovla yalnız qanunla xüsusi icazə verilmiş insanlar məşğul ola bilər.
+            </div>
+
             <button class="btn" onclick="startGame()">OYUNA BAŞLA</button>
+            
+            <div class="author-credits">Hazırladı: Aişə Sultan</div>
         </div>
 
         <div id="scoreboard">
-            <h3>Liderlər Cədvəli</h3>
+            <h3>Ən Yaxşı Ovçular</h3>
             <div class="score-header">
                 <div class="col-num">№</div>
                 <div class="col-name">Adı və Soyadı</div>
-                <div class="col-title">Rütbəsi</div>
+                <div class="col-title">Rütbə</div>
                 <div class="col-score">Xallar</div>
                 <div class="col-medal">Medal</div>
             </div>
@@ -179,7 +199,7 @@
         </div>
         
         <div id="ui-panel">
-            <div class="ui-box" id="player-display">Ovçu: -</div>
+            <div class="ui-box" id="player-display">Oyuncu: -</div>
             <div class="ui-box" id="level-display">Mərhələ: 1</div>
             <div class="ui-box" id="ammo-display">Güllə: 3/3</div>
             <div class="ui-box" id="combo-display">Kombi: X0</div>
@@ -206,6 +226,7 @@
     </div>
 
     <script>
+        // Firebase Konfiqurasiyası
         const firebaseConfig = {
             apiKey: "AIzaSyANT73cWZ32ymEjiis3JHo4u0xlPhExGYg",
             authDomain: "duckhuntergame-35c6c.firebaseapp.com",
@@ -238,6 +259,7 @@
         let duckFallInterval;
         let currentDuckElement = null;
 
+        // Audio Generatorlar
         function playQuackSound() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -251,22 +273,16 @@
                 let osc2 = audioCtx.createOscillator();
                 let gain = audioCtx.createGain();
 
-                osc1.type = 'sawtooth';
-                osc2.type = 'triangle';
-
+                osc1.type = 'sawtooth'; osc2.type = 'triangle';
                 osc1.frequency.setValueAtTime(320, audioCtx.currentTime);
                 osc1.frequency.linearRampToValueAtTime(180, audioCtx.currentTime + 0.15);
-
                 osc2.frequency.setValueAtTime(640, audioCtx.currentTime); 
                 osc2.frequency.linearRampToValueAtTime(360, audioCtx.currentTime + 0.15);
 
                 gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.16);
 
-                osc1.connect(gain);
-                osc2.connect(gain);
-                gain.connect(filter);
-
+                osc1.connect(gain); osc2.connect(gain); gain.connect(filter);
                 osc1.start(); osc2.start();
                 osc1.stop(audioCtx.currentTime + 0.16); osc2.stop(audioCtx.currentTime + 0.16);
             } catch(e) {}
@@ -296,518 +312,4 @@
                 const oscGain = audioCtx.createGain();
                 osc.type = 'triangle';
                 osc.frequency.setValueAtTime(160, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + 0.15);
-                oscGain.gain.setValueAtTime(0.5, audioCtx.currentTime);
-                oscGain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
-                
-                const bufferSize = audioCtx.sampleRate * 0.3;
-                const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-                const data = buffer.getChannelData(0);
-                for (let i = 0; i < bufferSize; i++) { data[i] = Math.random() * 2 - 1; }
-                const noise = audioCtx.createBufferSource();
-                noise.buffer = buffer;
-                
-                const filter = audioCtx.createBiquadFilter();
-                filter.type = 'lowpass';
-                filter.frequency.setValueAtTime(800, audioCtx.currentTime);
-                const noiseGain = audioCtx.createGain();
-                noiseGain.gain.setValueAtTime(0.4, audioCtx.currentTime);
-                noiseGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
-                
-                osc.connect(oscGain); oscGain.connect(audioCtx.destination);
-                noise.connect(filter); filter.connect(noiseGain); noiseGain.connect(audioCtx.destination);
-                osc.start(); noise.start();
-                osc.stop(audioCtx.currentTime + 0.25); noise.stop(audioCtx.currentTime + 0.25);
-            } catch(e) {}
-        }
-
-        function playEmptySound() {
-            try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(120, audioCtx.currentTime);
-                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
-                osc.connect(gain); gain.connect(audioCtx.destination);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.05);
-            } catch(e) {}
-        }
-
-        function playDuckHitSound() {
-            try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(450, audioCtx.currentTime);
-                osc.frequency.linearRampToValueAtTime(150, audioCtx.currentTime + 0.1);
-                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-                osc.connect(gain); gain.connect(audioCtx.destination);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.1);
-            } catch(e) {}
-        }
-
-        function playFallingSound() {
-            try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(700, audioCtx.currentTime);
-                osc.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + 0.7);
-                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.7);
-                osc.connect(gain); gain.connect(audioCtx.destination);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.7);
-            } catch(e) {}
-        }
-
-        function playGoldenHitSound() {
-            try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc1 = audioCtx.createOscillator();
-                const osc2 = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                
-                osc1.type = 'sine'; osc1.frequency.setValueAtTime(587.33, audioCtx.currentTime); 
-                osc2.type = 'sine'; osc2.frequency.setValueAtTime(880, audioCtx.currentTime); 
-                
-                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
-                
-                osc1.connect(gain); osc2.connect(gain);
-                gain.connect(audioCtx.destination);
-                
-                osc1.start(); osc2.start();
-                osc1.stop(audioCtx.currentTime + 0.4); osc2.stop(audioCtx.currentTime + 0.4);
-            } catch(e) {}
-        }
-
-        const gameContainer = document.getElementById('game-container');
-        const mainWrapper = document.getElementById('main-wrapper');
-        const scoreDisplay = document.getElementById('score-display');
-        const playerDisplay = document.getElementById('player-display');
-        const timerDisplay = document.getElementById('timer-display');
-        const levelDisplay = document.getElementById('level-display');
-        const ammoDisplay = document.getElementById('ammo-display');
-        const comboDisplay = document.getElementById('combo-display');
-        const crosshair = document.getElementById('crosshair');
-        const flashEffect = document.getElementById('flash-effect');
-        const levelAnnouncer = document.getElementById('level-announcer');
-        const announceTitle = document.getElementById('announce-title');
-        const scoreRowsContainer = document.getElementById('score-rows-container');
-        const bonusPopup = document.getElementById('bonus-popup');
-        const comboAlert = document.getElementById('combo-alert');
-
-        const grassContainer = document.getElementById('grass-container');
-        const totalBlades = Math.ceil(1180 / 8); // Geniş ekran üçün blade sayı artırıldı
-        for (let i = 0; i < totalBlades; i++) {
-            const blade = document.createElement('div');
-            blade.className = 'grass-blade';
-            blade.style.left = (i * 8) + 'px';
-            blade.style.borderBottomWidth = (Math.random() * 20 + 25) + 'px';
-            blade.style.borderLeftWidth = '7px'; blade.style.borderRightWidth = '7px';
-            const greenTones = ['#388e3c', '#2e7d32', '#4caf50', '#1b5e20'];
-            blade.style.borderBottomColor = greenTones[Math.floor(Math.random() * greenTones.length)];
-            blade.style.transform = `rotate(${(Math.random() * 10 - 5)}deg)`;
-            grassContainer.appendChild(blade);
-        }
-
-        database.ref('scores').on('value', (snapshot) => {
-            let scoresArray = [];
-            snapshot.forEach((childSnapshot) => {
-                scoresArray.push(childSnapshot.val());
-            });
-            scoresArray.sort((a, b) => b.points - a.points);
-            updateScoreboardView(scoresArray);
-        });
-
-        gameContainer.addEventListener('mousemove', (e) => {
-            const rect = gameContainer.getBoundingClientRect();
-            crosshair.style.left = (e.clientX - rect.left) + 'px';
-            crosshair.style.top = (e.clientY - rect.top) + 'px';
-        });
-        gameContainer.addEventListener('mouseenter', () => crosshair.style.display = 'block');
-        gameContainer.addEventListener('mouseleave', () => crosshair.style.display = 'none');
-
-        gameContainer.addEventListener('mousedown', () => {
-            if(!gameActive) return;
-            
-            if(ammoLeft <= 0) {
-                playEmptySound(); return;
-            }
-
-            ammoLeft--;
-            ammoDisplay.textContent = `Güllə: ${ammoLeft}/3`;
-            
-            resetCombo();
-
-            playShotSound(); 
-            flashEffect.style.display = 'block';
-            setTimeout(() => { flashEffect.style.display = 'none'; }, 60);
-        });
-
-        function resetCombo() {
-            comboCount = 0;
-            comboDisplay.style.display = 'none';
-        }
-
-        function triggerComboVisual(text) {
-            comboAlert.textContent = text;
-            comboAlert.style.display = 'block';
-            comboAlert.classList.remove('combo-animate');
-            void comboAlert.offsetWidth; 
-            comboAlert.classList.add('combo-animate');
-            playComboSound();
-            setTimeout(() => { comboAlert.style.display = 'none'; }, 1000);
-        }
-
-        function getDuckSVG(isGolden) {
-            const bodyColor = isGolden ? "#ffd700" : "#8d6e63";
-            const shadowColor = isGolden ? "#ffa500" : "#5d4037";
-            const headColor = isGolden ? "#ffe066" : "#2e7d32";
-            const chestColor = isGolden ? "#fff5cc" : "#bcaaa4";
-            const darkColor = isGolden ? "#b38f00" : "#4e342e";
-            const wingColor = isGolden ? "#e6b800" : "#5d4037";
-            const wingInner = isGolden ? "#fff0b3" : "#bcaaa4";
-            const wingStroke = isGolden ? "#b38f00" : "#3e2723";
-
-            return `
-                <svg viewBox="0 0 110 90" width="100%" height="100%">
-                    <polygon points="20,55 5,40 25,43" fill="${isGolden ? shadowColor : '#2c1d11'}" />
-                    <polygon points="22,50 8,32 25,38" fill="${shadowColor}" />
-                    <ellipse cx="50" cy="52" rx="34" ry="20" fill="${bodyColor}" />
-                    <path d="M 40,34 Q 55,34 65,52 Q 55,72 40,52 Z" fill="${chestColor}" /> 
-                    <rect x="42" y="52" width="25" height="12" fill="${darkColor}" rx="5"/>
-                    <path d="M 68,45 C 75,45 78,30 75,20 C 85,15 90,25 85,38 Z" fill="${headColor}" />
-                    <circle cx="78" cy="22" r="12" fill="${headColor}" />
-                    <rect x="70" y="32" width="12" height="3" fill="#ffffff" transform="rotate(15 70 32)"/>
-                    <circle cx="82" cy="18" r="3" fill="#ffffff" />
-                    <circle cx="82.5" cy="18" r="1.5" fill="#000000" />
-                    <path d="M 88,18 L 106,24 L 88,28 Z" fill="#ffca28" />
-                    <polygon points="40,70 35,82 45,82" fill="#ff7043" />
-                    <polygon points="52,70 48,82 58,82" fill="#ff7043" />
-                    <g class="duck-wing">
-                        <path d="M 35,50 C 20,15 45,2 52,25 C 55,35 48,50 35,50 Z" fill="${wingColor}" stroke="${wingStroke}" stroke-width="1.5"/>
-                        <path d="M 38,45 C 28,25 44,15 48,32 Z" fill="${wingInner}" />
-                    </g>
-                </svg>
-            `;
-        }
-
-        function startGame() {
-            const firstname = document.getElementById('firstname').value.trim();
-            const lastname = document.getElementById('lastname').value.trim();
-            const password = document.getElementById('password').value.trim();
-            
-            if (firstname === "" || lastname === "" || password === "") {
-                alert("Zəhmət olmasa Ad, Soyad və Şifrə sahələrini tam doldurun!"); return;
-            }
-            
-            // HƏMİŞƏ: Əvvəlcə AD, sonra SOYAD gələcək şəkildə formalaşdırılır
-            playerName = `${firstname} ${lastname}`;
-            const userKey = playerName.replace(/[.#$\[\]]/g, "_");
-            
-            database.ref('credentials/' + userKey).once('value').then((snapshot) => {
-                if (snapshot.exists()) {
-                    if (snapshot.val() !== password) {
-                        alert("⚠️ Bu Ad və Soyad artıq qeydiyyatdan keçib! Zəhmət olmasa düzgün şifrəni daxil edin.");
-                        return;
-                    }
-                    proceedToGame();
-                } else {
-                    database.ref('credentials/' + userKey).set(password).then(() => {
-                        proceedToGame();
-                    });
-                }
-            });
-        }
-
-        function proceedToGame() {
-            playerDisplay.textContent = `Ovçu: ${playerName}`;
-            mainWrapper.style.display = 'none';
-            gameContainer.style.display = 'block';
-            
-            score = 0;
-            ducksHit = 0;
-            totalDucksSpawned = 0;
-            currentLevel = 1;
-            resetCombo();
-            
-            startLevel(1);
-        }
-
-        function startLevel(lvl) {
-            currentLevel = lvl;
-            timeLeft = 60;
-            isDuckActive = false;
-            gameActive = false;
-            levelDuckCount = 0;
-            resetCombo();
-
-            const firstGolden = Math.floor(Math.random() * 3) + 2; 
-            const secondGolden = Math.floor(Math.random() * 3) + 6; 
-            goldenDuckSpawnRounds = [firstGolden, secondGolden];
-            
-            levelDisplay.textContent = `Mərhələ: ${currentLevel}`;
-            timerDisplay.textContent = `Vaxt: ${timeLeft}`;
-            scoreDisplay.textContent = `Xal: ${score}`;
-            
-            ammoLeft = 3;
-            ammoDisplay.textContent = `Güllə: ${ammoLeft}/3`;
-            
-            announceTitle.textContent = `MƏRHƏLƏ ${currentLevel}`;
-            levelAnnouncer.style.opacity = '1';
-            
-            setTimeout(() => {
-                levelAnnouncer.style.opacity = '0';
-                gameActive = true;
-                startTimer();
-                nextDuckManager();
-            }, 2000);
-        }
-
-        function startTimer() {
-            clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                if(!gameActive) return;
-                timeLeft--;
-                timerDisplay.textContent = `Vaxt: ${timeLeft}`;
-                
-                if(timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    endLevelLogic();
-                }
-            }, 1000);
-        }
-
-        function endLevelLogic() {
-            gameActive = false;
-            clearCurrentDuck();
-
-            if (currentLevel === 1) {
-                if (ducksHit === 0) {
-                    alert(`Oyunu uduzdunuz! Sıfır ördək vurduğunuz üçün 2-ci mərhələyə buraxılmırsınız.`);
-                    gameOver(true);
-                } else if (ducksHit < 5) {
-                    alert(`Oyunu uduzdunuz! Siz ${ducksHit} ördək vurdunuz. 2-ci mərhələyə keçmək üçün ən az 5 ədəd ördək vurulmalıdır!`);
-                    gameOver(true);
-                } else {
-                    alert(`Təbriklər! 1-ci mərhələni tamamladınız. Sürətli olan 2-ci mərhələ başlayır!`);
-                    startLevel(2);
-                }
-            } else if (currentLevel === 2) {
-                alert(`Mükəmməl! Hər iki mərhələni tamamladınız. Yekun xalınız: ${score}`);
-                gameOver(false);
-            }
-        }
-
-        function gameOver(isDisqualified) {
-            gameActive = false;
-            clearInterval(timerInterval);
-            clearCurrentDuck();
-            
-            let missedDucks = totalDucksSpawned - ducksHit;
-            if(isDisqualified) { missedDucks = 999; }
-            
-            saveScoreFirebase(playerName, score, missedDucks);
-            
-            gameContainer.style.display = 'none';
-            mainWrapper.style.display = 'flex';
-            document.getElementById('password').value = ""; 
-        }
-
-        function clearCurrentDuck() {
-            if(currentDuckElement) {
-                currentDuckElement.remove();
-                currentDuckElement = null;
-            }
-            clearInterval(duckMoveInterval);
-            clearInterval(duckFallInterval);
-            isDuckActive = false;
-        }
-
-        function nextDuckManager() {
-            if (!gameActive) return;
-            if (!isDuckActive) { 
-                setTimeout(createDuck, Math.random() * 600 + 400); 
-            }
-        }
-
-        function createDuck() {
-            if (!gameActive) return;
-            isDuckActive = true;
-            totalDucksSpawned++;
-            levelDuckCount++;
-            
-            ammoLeft = 3;
-            ammoDisplay.textContent = `Güllə: ${ammoLeft}/3`;
-            
-            const isGoldenDuck = goldenDuckSpawnRounds.includes(levelDuckCount);
-
-            const duck = document.createElement('div');
-            duck.className = 'duck';
-            if (isGoldenDuck) {
-                duck.classList.add('golden-duck');
-            }
-            duck.innerHTML = getDuckSVG(isGoldenDuck);
-            currentDuckElement = duck;
-
-            const fromLeft = Math.random() > 0.5;
-            let startX, startY;
-            const verticalVariation = Math.random() * 140; 
-
-            if (fromLeft) {
-                startX = -120; startY = (360 - verticalVariation); duck.style.transform = 'scaleX(1)'; 
-            } else {
-                startX = 1200; startY = (360 - verticalVariation); duck.style.transform = 'scaleX(-1)'; // Enli ekran üçün start artırıldı
-            }
-
-            duck.style.left = startX + 'px'; duck.style.top = startY + 'px';
-            gameContainer.appendChild(duck);
-
-            playQuackSound();
-
-            let speedMultiplier = currentLevel === 2 ? 1.95 : 1.0;
-            if (isGoldenDuck) speedMultiplier *= 1.25;
-
-            let speedX = (fromLeft ? (Math.random() * 2 + 4.5) : -(Math.random() * 2 + 4.5)) * speedMultiplier;
-            let speedY = (-(Math.random() * 2 + 2)) * speedMultiplier; 
-
-            let missedTracked = false;
-
-            duckMoveInterval = setInterval(() => {
-                if(!gameActive) { clearCurrentDuck(); return; }
-                startX += speedX; startY += speedY;
-                duck.style.left = startX + 'px'; duck.style.top = startY + 'px';
-
-                if (startX > 1300 || startX < -200 || startY < -100) { // Limit enli ekrana uyğunlaşdırıldı
-                    if(!missedTracked) {
-                        missedTracked = true;
-                        resetCombo(); 
-                    }
-                    clearCurrentDuck(); nextDuckManager(); 
-                }
-            }, 20);
-
-            duck.addEventListener('mousedown', (e) => {
-                if(!gameActive) return;
-                if(ammoLeft < 0) return; 
-                
-                e.stopPropagation(); 
-
-                ammoLeft--;
-                ammoDisplay.textContent = `Güllə: ${ammoLeft}/3`;
-
-                comboCount++;
-
-                let calculatedPoints = 0;
-                let isComboActive = comboCount >= 3;
-
-                if (isComboActive) {
-                    comboDisplay.style.display = 'block';
-                    comboDisplay.textContent = `Kombi: X${comboCount} 🔥`;
-                    
-                    if(comboCount === 3) triggerComboVisual("SUPER!");
-                    else if(comboCount === 5) triggerComboVisual("MÜKƏMMƏL!");
-                }
-
-                if (isGoldenDuck) {
-                    playGoldenHitSound();
-                    calculatedPoints = isComboActive ? 50 : 25; 
-                    score += calculatedPoints;
-                    timeLeft += 5; 
-                    timerDisplay.textContent = `Vaxt: ${timeLeft}`;
-                    
-                    bonusPopup.style.left = e.clientX - gameContainer.getBoundingClientRect().left + 'px';
-                    bonusPopup.style.top = e.clientY - gameContainer.getBoundingClientRect().top + 'px';
-                    bonusPopup.style.display = 'block';
-                    
-                    setTimeout(() => { bonusPopup.style.display = 'none'; }, 1200);
-                } else {
-                    playDuckHitSound(); 
-                    calculatedPoints = isComboActive ? 10 : 5; 
-                    score += calculatedPoints; 
-                    setTimeout(() => { playFallingSound(); }, 80);
-                }
-
-                duck.classList.add('hit'); 
-                ducksHit++;
-                scoreDisplay.textContent = `Xal: ${score}`;
-                
-                clearInterval(duckMoveInterval);
-                const wing = duck.querySelector('.duck-wing');
-                if (wing) wing.style.animation = 'none';
-                
-                duck.style.transform = fromLeft ? 'rotate(135deg)' : 'scaleX(-1) rotate(135deg)';
-
-                let fallY = startY;
-                duckFallInterval = setInterval(() => {
-                    fallY += 12; 
-                    duck.style.top = fallY + 'px';
-
-                    if (fallY > 450) {
-                        clearCurrentDuck();
-                        nextDuckManager(); 
-                    }
-                }, 20);
-            });
-        }
-
-        function saveScoreFirebase(name, pts, missed) {
-            const userKey = name.replace(/[.#$\[\]]/g, "_");
-            const scoreRef = database.ref('scores/' + userKey);
-
-            scoreRef.once('value').then((snapshot) => {
-                if (snapshot.exists()) {
-                    if (pts > snapshot.val().points) {
-                        scoreRef.set({ name: name, points: pts, missedCount: missed });
-                    }
-                } else {
-                    scoreRef.set({ name: name, points: pts, missedCount: missed });
-                }
-            });
-        }
-
-        function getRankTitle(missedCount) {
-            if (missedCount === 0) return "Snaqper 🎯";
-            if (missedCount <= 2) return "Usta Ovçu ⭐";
-            if (missedCount <= 5) return "Gənc Ovçu 🏹";
-            return "Həvəskar 🌲";
-        }
-
-        function updateScoreboardView(scores) {
-            scoreRowsContainer.innerHTML = "";
-            
-            if(!scores || scores.length === 0) {
-                scoreRowsContainer.innerHTML = "<div style='color:#999; text-align:center; padding:10px;'>Hələ rekord yoxdur</div>";
-                return;
-            }
-
-            scores.forEach((s, index) => {
-                let medalVisual = "";
-                if (s.missedCount === 0) medalVisual = "🥇"; 
-                else if (s.missedCount === 1) medalVisual = "🥈"; 
-                else if (s.missedCount === 2) medalVisual = "🥉"; 
-                else medalVisual = "❌"; 
-
-                const rankTitle = getRankTitle(s.missedCount);
-
-                const row = document.createElement('div');
-                row.className = 'score-row';
-                row.innerHTML = `
-                    <div class="col-num"><span class="num-slot">${index + 1}</span></div>
-                    <div class="col-name"><span class="score-name">${s.name}</span></div>
-                    <div class="col-title"><span class="score-title-cell">${rankTitle}</span></div>
-                    <div class="col-score"><span class="score-points">${s.points}</span></div>
-                    <div class="col-medal"><span class="medal-slot">${medalVisual}</span></div>
-                `;
-                scoreRowsContainer.appendChild(row);
-            });
-        }
-    </script>
-</body>
-</html>
+                osc.frequency.exponentialRampToValueAtTime(
