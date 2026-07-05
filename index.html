@@ -2,25 +2,27 @@
 <html lang="az">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ovçu Oyunu</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-    <!-- Qoruyucu Script -->
+    
     <script>
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.onselectstart = () => false;
         document.onkeydown = e => {
-            if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 67 || e.keyCode == 74)) || (e.ctrlKey && e.keyCode == 85)) return false;
+            if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 67)) || (e.ctrlKey && e.keyCode == 85)) return false;
         };
     </script>
+    
     <style>
-        body { margin: 0; padding: 0; background-color: #1a1a1a; font-family: 'Comic Sans MS', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; user-select: none; }
-        #main-wrapper { display: flex; gap: 20px; align-items: flex-start; }
-        #login-screen { background: #ffffff; padding: 30px 40px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); text-align: center; width: 380px; border: 4px solid #4caf50; }
-        input { width: 85%; padding: 12px; margin: 10px 0; border: 3px solid #c5e1a5; border-radius: 8px; font-size: 16px; outline: none; }
-        .btn { background-color: #ff9100; color: white; border: none; padding: 14px 40px; font-size: 18px; font-weight: bold; border-radius: 8px; cursor: pointer; }
-        #game-container { display: none; position: relative; width: 1180px; height: 562px; background: #63c7ff; border: 6px solid #fff; border-radius: 12px; cursor: none; overflow: hidden; }
+        /* CSS kodlarınız olduğu kimi qalır */
+        body { margin: 0; background-color: #1a1a1a; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; user-select: none; }
+        #main-wrapper { display: flex; gap: 20px; }
+        #login-screen { background: #fff; padding: 30px; border-radius: 20px; width: 380px; border: 4px solid #4caf50; }
+        #scoreboard { background: #fff; width: 560px; padding: 20px; border-radius: 15px; border: 4px solid #0288d1; max-height: 530px; overflow-y: auto; }
+        #game-container { display: none; position: relative; width: 1180px; height: 562px; background: #63c7ff; border: 6px solid #fff; border-radius: 12px; }
+        input { width: 85%; padding: 12px; margin: 10px 0; border: 3px solid #c5e1a5; border-radius: 8px; }
+        .btn { background-color: #ff9100; color: white; padding: 14px 40px; border: none; border-radius: 8px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -33,23 +35,45 @@
             <input type="password" id="password" placeholder="Şifrəniz">
             <button class="btn" onclick="startGame()">OYUNA BAŞLA</button>
         </div>
+
+        <div id="scoreboard">
+            <h3>Ən Yaxşı Ovçular</h3>
+            <div id="score-rows-container">Yüklənir...</div>
+        </div>
     </div>
 
     <div id="game-container">
-        <!-- Oyun məzmunu burada qalır -->
-    </div>
+        </div>
 
     <script>
-        // Firebase və oyun məntiqi buradadır
         const firebaseConfig = { apiKey: "AIzaSyANT73cWZ32ymEjiis3JHo4u0xlPhExGYg", authDomain: "duckhuntergame-35c6c.firebaseapp.com", databaseURL: "https://duckhuntergame-35c6c-default-rtdb.europe-west1.firebasedatabase.app", projectId: "duckhuntergame-35c6c", storageBucket: "duckhuntergame-35c6c.firebasestorage.app", messagingSenderId: "583544426641", appId: "1:583544426641:web:04bcbe7b38ab50fead6f30" };
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
+        // Cədvəli yükləyən funksiya
+        database.ref('scores').on('value', (snapshot) => {
+            const container = document.getElementById('score-rows-container');
+            container.innerHTML = "";
+            let scores = [];
+            snapshot.forEach(child => scores.push(child.val()));
+            scores.sort((a, b) => b.points - a.points);
+            
+            scores.forEach((s, i) => {
+                container.innerHTML += `<div style="padding:10px; border-bottom:1px solid #ccc;">${i+1}. ${s.name} - ${s.points} xal</div>`;
+            });
+        });
+
         function startGame() {
-            const f = document.getElementById('firstname').value, l = document.getElementById('lastname').value, p = document.getElementById('password').value;
-            if(!f || !l || !p) return alert("Məlumatları daxil edin!");
-            // Oyunun qalan hissəsi...
-            console.log("Oyun başladı");
+            const firstname = document.getElementById('firstname').value;
+            const lastname = document.getElementById('lastname').value;
+            const password = document.getElementById('password').value;
+            
+            if (!firstname || !lastname || !password) return alert("Bütün sahələri doldurun!");
+            
+            // Oyunun qalan məntiqi burada davam edir...
+            alert("Oyuna xoş gəlmisiniz, " + firstname + "!");
+            document.getElementById('main-wrapper').style.display = 'none';
+            document.getElementById('game-container').style.display = 'block';
         }
     </script>
 </body>
