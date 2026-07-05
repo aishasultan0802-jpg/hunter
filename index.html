@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ovçu v19.0 - Auto Diagnostic Edition</title>
+    <title>Ovçu v16.5 - Live Edition</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <style>
@@ -117,4 +117,543 @@
         
         @keyframes popIn {
             0% { opacity: 0; transform: translateX(-50%) scale(0.3); }
-            30
+            30% { opacity: 1; transform: translateX(-50%) scale(1.1); }
+            80% { opacity: 1; transform: translateX(-50%) scale(1); }
+            100% { opacity: 0; transform: translateX(-50%) scale(0.8); }
+        }
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -120px) scale(1.3); }
+        }
+
+        .cloud { position: absolute; background: #ffffff; border-radius: 100px; z-index: 1; filter: drop-shadow(0 4px 4px rgba(0,0,0,0.05)); animation: moveCloud linear infinite; }
+        .cloud::before, .cloud::after { content: ''; position: absolute; background: #ffffff; border-radius: 50%; }
+        .cloud-1 { width: 140px; height: 45px; top: 40px; left: -200px; animation-duration: 32s; }
+        .cloud-1::before { width: 60px; height: 60px; top: -30px; left: 15px; }
+        .cloud-1::after { width: 80px; height: 80px; top: -40px; left: 45px; }
+        .cloud-2 { width: 170px; height: 50px; top: 100px; left: -250px; animation-duration: 45s; animation-delay: -15s; }
+        .cloud-2::before { width: 75px; height: 75px; top: -35px; left: 20px; }
+        .cloud-2::after { width: 95px; height: 95px; top: -45px; left: 55px; }
+        @keyframes moveCloud { 0% { left: -250px; } 100% { left: 1250px; } }
+        
+        .mountains { position: absolute; bottom: 85px; left: 0; width: 100%; height: 120px; z-index: 2; opacity: 0.45; pointer-events: none; }
+        .vector-tree { position: absolute; bottom: 90px; right: 80px; width: 120px; height: 180px; z-index: 3; pointer-events: none; }
+        .environment { position: absolute; bottom: 0; left: 0; width: 100%; height: 95px; background: linear-gradient(to top, #2e7d32 60%, #388e3c 100%); z-index: 10; border-top: 2px solid #4caf50; }
+        .bush-left { position: absolute; bottom: 80px; left: -20px; width: 160px; height: 75px; background: #1b5e20; border-radius: 60px 60px 0 0; z-index: 11; }
+        .bush-right-small { position: absolute; bottom: 85px; right: -10px; width: 110px; height: 55px; background: #1b5e20; border-radius: 55px 55px 0 0; z-index: 9; }
+        
+        .duck { position: absolute; width: 85px; height: 70px; z-index: 5; transform-origin: center; transition: filter 0.1s; }
+        .duck-wing { transform-origin: 35px 25px; animation: flap-wings 0.12s infinite alternate ease-in-out; }
+        @keyframes flap-wings { 0% { transform: scaleY(1) translateY(0); } 100% { transform: scaleY(-0.7) translateY(10px); } }
+        .duck.hit { filter: hue-rotate(140deg) brightness(0.6) saturate(3) !important; }
+        .duck.golden-duck { filter: drop-shadow(0 0 12px #ffd700) drop-shadow(0 0 5px #ff8c00); }
+
+        #crosshair { position: absolute; width: 50px; height: 50px; border: 3px solid #ff0000; border-radius: 50%; pointer-events: none; z-index: 100; transform: translate(-50%, -50%); display: none; box-shadow: 0 0 10px rgba(255,0,0,0.5); }
+        #crosshair::before { content: ''; position: absolute; top: 50%; left: 50%; width: 6px; height: 6px; background: #ff0000; border-radius: 50%; transform: translate(-50%, -50%); }
+        .cross-line-h { position: absolute; top: 23px; left: -10px; width: 70px; height: 3px; background: #ff0000; }
+        .cross-line-v { position: absolute; top: -10px; left: 23px; width: 3px; height: 70px; background: #ff0000; }
+        .shoot-flash { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.5); z-index: 95; pointer-events: none; display: none; }
+        
+        #ui-panel { 
+            position: absolute; top: 0; left: 0; width: 100%; padding: 10px; 
+            box-sizing: border-box; display: flex; flex-wrap: wrap; justify-content: center; gap: 5px;
+            color: #fff; font-size: 13px; font-weight: bold; text-shadow: 2px 2px 0px rgba(0,0,0,0.4); z-index: 50; 
+        }
+        .ui-box { background: rgba(0,0,0,0.5); padding: 4px 10px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.2); }
+        #score-display { color: #ffeb3b; }
+        #timer-display { color: #ff5252; }
+        #level-display { color: #4caf50; }
+        #ammo-display { color: #ffffff; background: rgba(211, 47, 47, 0.6); }
+        #combo-display { color: #e040fb; font-weight: 900; display: none; }
+
+        @media (min-width: 600px) {
+            #ui-panel { font-size: 16px; justify-content: space-between; padding: 15px; }
+            #level-announcer { font-size: 48px; }
+            #level-announcer .sub-text { font-size: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="main-wrapper">
+        <div id="login-screen">
+            <h2>Ovçu</h2>
+            <input type="text" id="firstname" placeholder="Adınız" required>
+            <input type="text" id="lastname" placeholder="Soyadınız" required>
+            <input type="password" id="password" placeholder="Şifrəniz" required>
+            
+            <div class="eco-warning">
+                <strong>⚠️ DİQQƏT!</strong>
+                Bu sadəcə bir oyundur. Biz təbiəti qorumalıyhıq! Gerçək həyatda ovla yalnız qanunla xüsusi icazə verilmiş insanlar məşğul ola bilər.
+            </div>
+
+            <button class="btn" onclick="startGame()">OYUNA BAŞLA</button>
+            
+            <div class="author-credits">Hazırladı: Aişə Sultan</div>
+        </div>
+
+        <div id="scoreboard">
+            <h3>Ən Yaxşı Ovçular</h3>
+            <div class="score-header">
+                <div class="col-num">№</div>
+                <div class="col-name">Adı və Soyadı</div>
+                <div class="col-title">Rütbə</div>
+                <div class="col-score">Xallar</div>
+                <div class="col-medal">Medal</div>
+            </div>
+            <div id="score-rows-container">
+                <div style='color:#999; text-align:center; padding:10px;'>Yüklənir...</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="game-container">
+        <div id="level-announcer">
+            <div id="announce-title">MƏRHƏLƏ 1</div>
+            <div class="sub-text">HAZIRLAŞIN...</div>
+        </div>
+
+        <div id="bonus-popup">+25 XAL & +5 SANİYƏ!</div>
+        <div id="combo-alert">SUPER!</div>
+        
+        <div class="shoot-flash" id="flash-effect"></div>
+        <div id="crosshair">
+            <div class="cross-line-h"></div>
+            <div class="cross-line-v"></div>
+        </div>
+        <div class="cloud cloud-1"></div>
+        <div class="cloud cloud-2"></div>
+        <div class="mountains">
+            <svg viewBox="0 0 1180 150" width="100%" height="100%" preserveAspectRatio="none">
+                <polygon points="0,150 120,60 280,110 450,40 600,95 780,30 920,100 1180,50 1180,150" fill="#4b8e8f" />
+                <polygon points="0,150 200,80 380,120 550,65 700,105 880,55 1180,120 1180,150" fill="#3b7a7b" opacity="0.7" />
+            </svg>
+        </div>
+        
+        <div id="ui-panel">
+            <div class="ui-box" id="player-display">Oyuncu: -</div>
+            <div class="ui-box" id="level-display">Mərhələ: 1</div>
+            <div class="ui-box" id="ammo-display">Güllə: 3/3</div>
+            <div class="ui-box" id="combo-display">Kombi: X0</div>
+            <div class="ui-box" id="timer-display">Vaxt: 60</div>
+            <div class="ui-box" id="score-display">Xal: 0</div>
+        </div>
+        
+        <div class="vector-tree">
+            <svg viewBox="0 0 150 220" width="100%" height="100%">
+                <path d="M65,220 L68,140 L60,110 L75,80 L80,120 L75,220 Z" fill="#8B5A2B" />
+                <path d="M75,140 L90,110 L105,115 L90,135 Z" fill="#8B5A2B" />
+                <circle cx="70" cy="90" r="45" fill="#2e7d32" />
+                <circle cx="45" cy="110" r="35" fill="#388e3c" />
+                <circle cx="95" cy="110" r="38" fill="#388e3c" />
+                <circle cx="70" cy="65" r="35" fill="#4caf50" />
+                <circle cx="50" cy="80" r="25" fill="#4caf50" />
+                <circle cx="90" cy="80" r="28" fill="#4caf50" />
+            </svg>
+        </div>
+        <div class="environment" id="grass-container">
+            <div class="bush-left"></div>
+        </div>
+        <div class="bush-right-small"></div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyANT73cWZ32ymEjiis3JHo4u0xlPhExGYg",
+            authDomain: "duckhuntergame-35c6c.firebaseapp.com",
+            databaseURL: "https://duckhuntergame-35c6c-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "duckhuntergame-35c6c",
+            storageBucket: "duckhuntergame-35c6c.firebasestorage.app",
+            messagingSenderId: "583544426641",
+            appId: "1:583544426641:web:04bcbe7b38ab50fead6f30"
+        };
+        
+        let database = null;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            database = firebase.database();
+        } catch(e) {
+            console.log("Firebase xətası, Local yaddaş aktivdir.");
+        }
+
+        let score = 0;
+        let ducksHit = 0;
+        let totalDucksSpawned = 0;
+        let currentLevel = 1;
+        let timeLeft = 60;
+        let ammoLeft = 3; 
+        let comboCount = 0; 
+        let playerName = "";
+        let isDuckActive = false;
+        let gameActive = false;
+        
+        let levelDuckCount = 0; 
+        let goldenDuckSpawnRounds = []; 
+
+        let timerInterval;
+        let duckMoveInterval;
+        let duckFallInterval;
+        let currentDuckElement = null;
+
+        function playQuackSound() { try { const audioCtx = new (window.AudioContext || window.webkitAudioContext)(); const filter = audioCtx.createBiquadFilter(); filter.type = 'bandpass'; filter.frequency.setValueAtTime(450, audioCtx.currentTime); filter.Q.setValueAtTime(3, audioCtx.currentTime); filter.connect(audioCtx.destination); let osc1 = audioCtx.createOscillator(); let osc2 = audioCtx.createOscillator(); let gain = audioCtx.createGain(); osc1.type = 'sawtooth'; osc2.type = 'triangle'; osc1.frequency.setValueAtTime(320, audioCtx.currentTime); osc1.frequency.linearRampToValueAtTime(180, audioCtx.currentTime + 0.15); osc2.frequency.setValueAtTime(640, audioCtx.currentTime); osc2.frequency.linearRampToValueAtTime(360, audioCtx.currentTime + 0.15); gain.gain.setValueAtTime(0.25, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.16); osc1.connect(gain); osc2.connect(gain); gain.connect(filter); osc1.start(); osc2.start(); osc1.stop(audioCtx.currentTime + 0.16); osc2.stop(audioCtx.currentTime + 0.16); } catch(e) {} }
+        function playComboSound() { try { const audioCtx = new (window.AudioContext || window.webkitAudioContext)(); const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'sine'; osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2); osc.frequency.setValueAtTime(1046.50, audioCtx.currentTime + 0.3); gain.gain.setValueAtTime(0.2, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.5); osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.5); } catch(e) {} }
+        function playShotSound() { try { const audioCtx = new (window.AudioContext || window.webkitAudioContext)(); const osc = audioCtx.createOscillator(); const oscGain = audioCtx.createGain(); osc.type = 'triangle'; osc.frequency.setValueAtTime(160, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.3); const bufferSize = audioCtx.sampleRate * 0.3; const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate); const data = buffer.getChannelData(0); for (let i = 0; i < bufferSize; i++) { data[i] = Math.random() * 2 - 1; } const noise = audioCtx.createBufferSource(); noise.buffer = buffer; const noiseGain = audioCtx.createGain(); noiseGain.gain.setValueAtTime(0.3, audioCtx.currentTime); noiseGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25); oscGain.gain.setValueAtTime(0.4, audioCtx.currentTime); oscGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3); osc.connect(oscGain); oscGain.connect(audioCtx.destination); noise.connect(noiseGain); noiseGain.connect(audioCtx.destination); osc.start(); noise.start(); osc.stop(audioCtx.currentTime + 0.3); noise.stop(audioCtx.currentTime + 0.3); } catch(e) {} }
+        function playEmptySound() { try { const audioCtx = new (window.AudioContext || window.webkitAudioContext)(); const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'sine'; osc.frequency.setValueAtTime(120, audioCtx.currentTime); gain.gain.setValueAtTime(0.15, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.1); osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.1); } catch(e) {} }
+        function playHitSound() { try { const audioCtx = new (window.AudioContext || window.webkitAudioContext)(); const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, audioCtx.currentTime); osc.frequency.linearRampToValueAtTime(300, audioCtx.currentTime + 0.15); gain.gain.setValueAtTime(0.2, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.15); osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.15); } catch(e) {} }
+
+        function renderScoreboard(dataList) {
+            const container = document.getElementById('score-rows-container');
+            container.innerHTML = '';
+            
+            if(!dataList || dataList.length === 0) {
+                container.innerHTML = "<div style='color:#999; text-align:center; padding:10px;'>Hələ heç bir rekord yoxdur.</div>";
+                return;
+            }
+
+            // Xalları böyükdən kiçiyə sırala və dublikatları təmizlə
+            dataList.sort((a, b) => b.score - a.score);
+            
+            dataList.forEach((data, index) => {
+                let medal = "•";
+                if(index === 0) medal = "🥇";
+                else if(index === 1) medal = "🥈";
+                else if(index === 2) medal = "🥉";
+
+                let rankTitle = "Çaylaq";
+                if(data.score >= 1000) rankTitle = "Əfsanəvi Ovçu";
+                else if(data.score >= 600) rankTitle = "Professional";
+                else if(data.score >= 300) rankTitle = "Təcrübəli";
+                else if(data.score >= 150) rankTitle = "Snayper";
+
+                const row = document.createElement('div');
+                row.className = 'score-row';
+                row.innerHTML = `
+                    <div class="col-num"><span class="num-slot">${index + 1}</span></div>
+                    <div class="col-name"><span class="score-name">${data.name}</span></div>
+                    <div class="col-title"><span class="score-title-cell">${rankTitle}</span></div>
+                    <div class="col-score"><span class="score-points">${data.score}</span></div>
+                    <div class="col-medal"><span class="medal-slot">${medal}</span></div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function loadScores() {
+            // 1. Öncə daxili yaddaşı dərhal ekrana ver
+            let localScores = JSON.parse(localStorage.getItem('duck_hunter_scores')) || [];
+            renderScoreboard(localScores.slice(0, 20));
+
+            // 2. Canlı olaraq Firebase-i dinlə (Hər evdən data gəldikcə yenilənəcək)
+            if (database) {
+                database.ref('scores').orderByChild('score').limitToLast(40).on('value', (snapshot) => {
+                    let firebaseList = [];
+                    snapshot.forEach((childSnapshot) => {
+                        firebaseList.push(childSnapshot.val());
+                    });
+                    firebaseList.reverse();
+                    
+                    if(firebaseList.length > 0) {
+                        localStorage.setItem('duck_hunter_scores', JSON.stringify(firebaseList));
+                        renderScoreboard(firebaseList.slice(0, 20));
+                    }
+                }, (error) => {
+                    console.log("Məlumat oxuma xətası.");
+                });
+            }
+        }
+
+        window.onload = loadScores;
+
+        function startGame() {
+            const fname = document.getElementById('firstname').value.trim();
+            const lname = document.getElementById('lastname').value.trim();
+            const pass = document.getElementById('password').value.trim();
+
+            if(!fname || !lname || !pass) {
+                alert("Zəhmət olmasa bütün xanaları doldurun!");
+                return;
+            }
+
+            playerName = fname + " " + lname;
+            document.getElementById('player-display').innerText = "Oyuncu: " + playerName;
+            document.getElementById('main-wrapper').style.display = 'none';
+            
+            const gameContainer = document.getElementById('game-container');
+            gameContainer.style.display = 'block';
+            
+            gameActive = true;
+            score = 0;
+            currentLevel = 1;
+            timeLeft = 60;
+            ammoLeft = 3;
+            comboCount = 0;
+            ducksHit = 0;
+            totalDucksSpawned = 0;
+            
+            updateUI();
+            setupLevel(currentLevel);
+            
+            timerInterval = setInterval(() => {
+                if(!gameActive) return;
+                timeLeft--;
+                updateUI();
+                if(timeLeft <= 0) {
+                    gameOver();
+                }
+            }, 1000);
+        }
+
+        function updateUI() {
+            document.getElementById('score-display').innerText = "Xal: " + score;
+            document.getElementById('timer-display').innerText = "Vaxt: " + timeLeft;
+            document.getElementById('level-display').innerText = "Mərhələ: " + currentLevel;
+            document.getElementById('ammo-display').innerText = `Güllə: ${ammoLeft}/3`;
+            
+            const comboDisp = document.getElementById('combo-display');
+            if(comboCount >= 2) {
+                comboDisp.innerText = `Kombi: X${comboCount}`;
+                comboDisp.style.display = 'block';
+            } else {
+                comboDisp.style.display = 'none';
+            }
+        }
+
+        function setupLevel(lvl) {
+            levelDuckCount = 0;
+            goldenDuckSpawnRounds = [];
+            let numGoldens = Math.random() > 0.5 ? 2 : 1;
+            for(let i=0; i<numGoldens; i++) {
+                goldenDuckSpawnRounds.push(Math.floor(Math.random() * 8) + 1);
+            }
+            
+            const announcer = document.getElementById('level-announcer');
+            document.getElementById('announce-title').innerText = `MƏRHƏLƏ ${lvl}`;
+            announcer.style.opacity = '1';
+            
+            setTimeout(() => {
+                announcer.style.opacity = '0';
+                if(gameActive) spawnDuck();
+            }, 2000);
+        }
+
+        function spawnDuck() {
+            if(!gameActive) return;
+            
+            if(levelDuckCount >= 10) {
+                currentLevel++;
+                ammoLeft = 3;
+                updateUI();
+                setupLevel(currentLevel);
+                return;
+            }
+
+            isDuckActive = true;
+            levelDuckCount++;
+            totalDucksSpawned++;
+            ammoLeft = 3;
+            updateUI();
+
+            let isGolden = goldenDuckSpawnRounds.includes(levelDuckCount);
+
+            const container = document.getElementById('game-container');
+            const duck = document.createElement('div');
+            duck.className = 'duck' + (isGolden ? ' golden-duck' : '');
+            duck.dataset.golden = isGolden ? "true" : "false";
+            
+            duck.innerHTML = `
+                <svg viewBox="0 0 110 90" width="100%" height="100%">
+                    <ellipse cx="55" cy="55" rx="35" ry="22" fill="${isGolden ? '#ffd700' : '#4a3b32'}" />
+                    <path class="duck-wing" d="M45,55 C40,40 60,35 65,55 C60,65 40,60 45,55 Z" fill="${isGolden ? '#ffaa00' : '#6e5648'}" />
+                    <path d="M75,50 C85,50 90,35 85,25 C80,15 70,20 70,35 Z" fill="${isGolden ? '#ffd700' : '#2e7d32'}" />
+                    <circle cx="80" cy="25" r="8" fill="${isGolden ? '#fff7c2' : '#2e7d32'}" />
+                    <circle cx="82" cy="23" r="2" fill="#000" />
+                    <polygon points="86,22 102,26 86,30" fill="#ff9100" />
+                    <polygon points="22,50 10,42 24,58" fill="${isGolden ? '#ffaa00' : '#4a3b32'}" />
+                </svg>
+            `;
+
+            let startX = Math.random() * (container.clientWidth - 100) + 50;
+            let startY = container.clientHeight - 80;
+            duck.style.left = startX + 'px';
+            duck.style.top = startY + 'px';
+            
+            container.appendChild(duck);
+            currentDuckElement = duck;
+            
+            playQuackSound();
+
+            let speedMultiplier = 1 + (currentLevel * 0.15);
+            let angle = (Math.random() * 60 + 60) * (Math.PI / 180);
+            let speed = (Math.random() * 3 + 4) * speedMultiplier;
+            let vx = Math.cos(angle) * speed * (Math.random() > 0.5 ? 1 : -1);
+            let vy = -Math.sin(angle) * speed;
+
+            if (vx < 0) {
+                duck.style.transform = 'scaleX(-1)';
+            }
+
+            let posX = startX;
+            let posY = startY;
+
+            duckMoveInterval = setInterval(() => {
+                posX += vx;
+                posY += vy;
+
+                if(posX <= 0 || posX >= container.clientWidth - 90) {
+                    vx = -vx;
+                    duck.style.transform = vx < 0 ? 'scaleX(-1)' : 'scaleX(1)';
+                }
+                
+                if(posY <= 0) {
+                    clearInterval(duckMoveInterval);
+                    duck.remove();
+                    comboCount = 0;
+                    updateUI();
+                    isDuckActive = false;
+                    setTimeout(spawnDuck, 800);
+                }
+
+                duck.style.left = posX + 'px';
+                duck.style.top = posY + 'px';
+            }, 20);
+        }
+
+        function handleShoot(clientX, clientY) {
+            if(!gameActive || !isDuckActive) return;
+
+            const container = document.getElementById('game-container');
+            const rect = container.getBoundingClientRect();
+            
+            let clickX = clientX - rect.left;
+            let clickY = clientY - rect.top;
+
+            const crosshair = document.getElementById('crosshair');
+            crosshair.style.display = 'block';
+            crosshair.style.left = clickX + 'px';
+            crosshair.style.top = clickY + 'px';
+
+            const flash = document.getElementById('flash-effect');
+            flash.style.display = 'block';
+            setTimeout(() => flash.style.display = 'none', 40);
+
+            if(ammoLeft <= 0) {
+                playEmptySound();
+                return;
+            }
+
+            ammoLeft--;
+            playShotSound();
+            updateUI();
+
+            if(currentDuckElement) {
+                let duckRect = currentDuckElement.getBoundingClientRect();
+                let dX = clientX - (duckRect.left + duckRect.width/2);
+                let dY = clientY - (duckRect.top + duckRect.height/2);
+                let distance = Math.sqrt(dX*dX + dY*dY);
+
+                if(distance < 50) {
+                    hitDuck(currentDuckElement, clickX, clickY);
+                }
+            }
+        }
+
+        document.getElementById('game-container').addEventListener('mousedown', (e) => {
+            handleShoot(e.clientX, e.clientY);
+        });
+
+        document.getElementById('game-container').addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            if(e.touches.length > 0) {
+                handleShoot(e.touches[0].clientX, e.touches[0].clientY);
+            }
+        }, { passive: false });
+
+        function hitDuck(duck, clickX, clickY) {
+            isDuckActive = false;
+            clearInterval(duckMoveInterval);
+            playHitSound();
+            
+            duck.classList.add('hit');
+            ducksHit++;
+            comboCount++;
+
+            let isGolden = duck.dataset.golden === "true";
+            let pointsEarned = isGolden ? 50 : 10;
+            
+            if(comboCount >= 5) {
+                pointsEarned += 15;
+                triggerComboAlert("MÖHTƏŞƏM!");
+            } else if(comboCount >= 3) {
+                pointsEarned += 5;
+                triggerComboAlert("SUPER!");
+            }
+
+            score += pointsEarned;
+
+            if(isGolden) {
+                timeLeft += 5;
+                showBonusPopup(clickX, clickY);
+            }
+
+            updateUI();
+
+            let fallSpeed = 8;
+            duckFallInterval = setInterval(() => {
+                let currentTop = parseFloat(duck.style.top);
+                if(currentTop >= document.getElementById('game-container').clientHeight - 90) {
+                    clearInterval(duckFallInterval);
+                    duck.remove();
+                    setTimeout(spawnDuck, 600);
+                } else {
+                    duck.style.top = (currentTop + fallSpeed) + 'px';
+                }
+            }, 20);
+        }
+
+        function triggerComboAlert(msg) {
+            const alertBox = document.getElementById('combo-alert');
+            alertBox.innerText = msg;
+            alertBox.style.display = 'block';
+            alertBox.classList.remove('combo-animate');
+            void alertBox.offsetWidth; 
+            alertBox.classList.add('combo-animate');
+            playComboSound();
+            setTimeout(() => { alertBox.style.display = 'none'; }, 1000);
+        }
+
+        function showBonusPopup(x, y) {
+            const popup = document.getElementById('bonus-popup');
+            popup.style.left = x + 'px';
+            popup.style.top = y + 'px';
+            popup.style.display = 'block';
+            setTimeout(() => { popup.style.display = 'none'; }, 1200);
+        }
+
+        function gameOver() {
+            gameActive = false;
+            clearInterval(timerInterval);
+            clearInterval(duckMoveInterval);
+            clearInterval(duckFallInterval);
+            
+            if(currentDuckElement) currentDuckElement.remove();
+            document.getElementById('crosshair').style.display = 'none';
+
+            alert(`OYUN BİTDİ!\nTopladığınız ümumi xal: ${score}`);
+
+            const newRecord = {
+                name: playerName,
+                score: score,
+                timestamp: Date.now()
+            };
+
+            // Firebase-ə yaz (Bu bütün evlərdə sinxron yenilənəcək)
+            if(database) {
+                database.ref('scores').push(newRecord);
+            }
+
+            document.getElementById('game-container').style.display = 'none';
+            document.getElementById('main-wrapper').style.display = 'flex';
+        }
+    </script>
+</body>
+</html>
