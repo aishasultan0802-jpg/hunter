@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ovçu Oyunu</title>
+    
+    
+    
+    
+    
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div id="main-wrapper">
+        <div id="login-screen">
+            <h2>Ovçu Oyunu</h2>
+            <input type="text" id="firstname" placeholder="Adınız" required>
+            <input type="text" id="lastname" placeholder="Soyadınız" required>
+            <input type="password" id="password" placeholder="Şifrəniz" required>
+            <button type="button" id="confirm-password-btn" class="btn confirm-btn" onclick="confirmPassword()">ŞİFRƏNİ TƏSDİQLƏ</button>
+            <div id="hunter-id-preview" style="min-height:22px; margin-top:10px; margin-bottom:14px; padding:5px 8px; color:#2e7d32; font-size:14px; font-weight:bold; line-height:1.4;"></div>
+            
+            <div class="eco-warning">
+                <strong>⚠️ DİQQƏT!</strong>
+                Bu sadəcə bir oyundur. Biz təbiəti qorumalıyıq! Gerçək həyatda ovla yalnız qanunla xüsusi icazə verilmiş insanlar məşğul ola bilər.
+            </div>
+
+            <button class="btn" onclick="startGame()">OYUNA BAŞLA</button>
+            
+            <div class="author-credits">
+    <a href="https://aishasultan0802-jpg.github.io/aisha-sultan-site/">
+        Hazırladı: Aişə Sultan
+    </a>
+</div>
+        </div>
+
+        <div id="scoreboard">
+            <h3>Ən Yaxşı Ovçular</h3>
+            <div class="score-header">
+                <div class="col-num">№</div>
+                <div class="col-name">Ovçular</div>
+                <div class="col-title">Rütbə</div>
+                <div class="col-score">Xallar</div>
+                <div class="col-medal">Medal</div>
+            </div>
+            <div id="score-rows-container">
+                <div style='color:#999; text-align:center; padding:10px;'>Yüklənir...</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

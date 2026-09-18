@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ovçu Oyunu — Oyun</title>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="gameplay-page">
+
+    <div id="game-container">
+        <div id="level-announcer">
+            <div id="announce-title">MƏRHƏLƏ 1</div>
+            <div class="sub-text">HAZIRLAŞIN...</div>
+        </div>
+
+        <div id="bonus-popup">+25 XAL & +5 SANİYƏ!</div>
+        <div id="combo-alert">SUPER!</div>
+        
+        <div class="shoot-flash" id="flash-effect"></div>
+        <div id="crosshair">
+            <div class="cross-line-h"></div>
+            <div class="cross-line-v"></div>
+        </div>
+        <div class="cloud cloud-1"></div>
+        <div class="cloud cloud-2"></div>
+        <div class="mountains">
+            <svg viewBox="0 0 1180 150" width="100%" height="100%" preserveAspectRatio="none">
+                <polygon points="0,150 120,60 280,110 450,40 600,95 780,30 920,100 1180,50 1180,150" fill="#4b8e8f" />
+                <polygon points="0,150 200,80 380,120 550,65 700,105 880,55 1180,120 1180,150" fill="#3b7a7b" opacity="0.7" />
+            </svg>
+        </div>
+        
+        <div id="ui-panel">
+            <div class="ui-box" id="player-display"><div>Ovçu: -</div><div class="player-id-line">SİZİN İD: -</div></div>
+            <div class="ui-box" id="level-display">Mərhələ: 1</div>
+            <div class="ui-box" id="ammo-display">Güllə: 3/3</div>
+            <div class="ui-box" id="combo-display">Kombi: X0</div>
+            <div class="ui-box" id="timer-display">Vaxt: 60</div>
+            <div class="ui-box" id="score-display">Xal: 0</div>
+        </div>
+        
+        <div class="vector-tree">
+            <svg viewBox="0 0 150 220" width="100%" height="100%">
+                <path d="M65,220 L68,140 L60,110 L75,80 L80,120 L75,220 Z" fill="#8B5A2B" />
+                <path d="M75,140 L90,110 L105,115 L90,135 Z" fill="#8B5A2B" />
+                <circle cx="70" cy="90" r="45" fill="#2e7d32" />
+                <circle cx="45" cy="110" r="35" fill="#388e3c" />
+                <circle cx="95" cy="110" r="38" fill="#388e3c" />
+                <circle cx="70" cy="65" r="35" fill="#4caf50" />
+                <circle cx="50" cy="80" r="25" fill="#4caf50" />
+                <circle cx="90" cy="80" r="28" fill="#4caf50" />
+            </svg>
+        </div>
+        <div class="environment" id="grass-container">
+            <div class="bush-left"></div>
+        </div>
+        <div class="bush-right-small"></div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
